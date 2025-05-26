@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fitsSystemWindows="true">
+
+    <!-- Header: ancho completo sin márgenes -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:background="@color/white"
+        android:elevation="3dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#FFFFFF"
+            android:fontFamily="@font/source_code_pro"
+            android:text="Random Generator"
+            android:textColor="@color/text_dark"
+            android:textSize="26sp" />
+
+        <TextView
+            android:id="@+id/header_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:background="#FFFFFF"
+            android:fontFamily="@font/quicksand"
+            android:text="Proyecto de codificación de texto"
+            android:textColor="@color/text_gray"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/header_subtitle2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:fontFamily="@font/quicksand"
+            android:text="Random Generator\nProyecto de codificación de texto"
+            android:textColor="@color/text_gray"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <View
+            android:id="@+id/header_border"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="#007e66"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </LinearLayout>
+
+    <!-- EditText de entrada: con márgenes laterales -->
+    <EditText
+        android:id="@+id/input_text"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_background"
+        android:padding="8dp"
+        android:hint="Texto de entrada..."
+        android:textSize="20sp"
+        android:fontFamily="@font/quicksand"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Botones Limpiar y Copiar en la misma fila con margen lateral -->
+    <Button
+        android:id="@+id/button_clear"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/button_background"
+        android:drawableEnd="@drawable/ic_clear"
+        android:text="Limpiar"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:fontFamily="@font/quicksand"
+        app:layout_constraintTop_toBottomOf="@id/input_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_copy"
+        app:layout_constraintWidth_percent="0.45" />
+
+    <Button
+        android:id="@+id/button_copy"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button_background"
+        android:drawableEnd="@drawable/ic_copy"
+        android:text="Copiar"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:fontFamily="@font/quicksand"
+        app:layout_constraintTop_toBottomOf="@id/input_text"
+        app:layout_constraintStart_toEndOf="@id/button_clear"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.45" />
+
+    <!-- EditText de salida con márgenes laterales -->
+    <EditText
+        android:id="@+id/output_text"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_background"
+        android:padding="8dp"
+        android:hint="Texto de salida..."
+        android:textSize="20sp"
+        android:fontFamily="@font/quicksand"
+        app:layout_constraintTop_toBottomOf="@id/button_clear"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Botón Descargar como .txt debajo del output -->
+    <Button
+        android:id="@+id/button_download"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button_background"
+        android:drawableEnd="@drawable/ic_download"
+        android:fontFamily="@font/quicksand"
+        android:text="Descargar como .txt"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/output_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Botón Seleccionar archivo debajo del botón descargar -->
+    <Button
+        android:id="@+id/button_file_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button_background"
+        android:drawableEnd="@drawable/ic_upload"
+        android:fontFamily="@font/quicksand"
+        android:text="Seleccionar archivo"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/button_download"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
