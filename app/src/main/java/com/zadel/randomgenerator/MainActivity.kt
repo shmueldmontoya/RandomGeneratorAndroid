@@ -15,6 +15,19 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 import androidx.appcompat.app.AlertDialog
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.core.view.GravityCompat
+import android.widget.ImageButton
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import android.widget.LinearLayout
+import android.widget.Switch
+import androidx.appcompat.app.AppCompatDelegate
+import android.os.Handler
+import android.os.Looper
+import androidx.core.content.ContextCompat
+import android.view.View
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,22 +39,176 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonFileInput: Button
 
     private val charMap = mapOf(
-        "a" to "¢", "b" to "£", "c" to "¤", "d" to "¥", "e" to "¦", "f" to "§", "g" to "►", "h" to "©", "i" to "ª",
-        "j" to "«", "k" to "¬", "l" to "®", "m" to "¯", "n" to "°", "ñ" to "±", "o" to "²", "p" to "³", "q" to "µ",
-        "r" to "¶", "s" to "·", "t" to "¹", "u" to "º", "v" to "»", "w" to "¼", "x" to "½", "y" to "¾", "z" to "ø",
-        "A" to "¢^", "B" to "£^", "C" to "¤^", "D" to "¥^", "E" to "¦^", "F" to "§^", "G" to "►^", "H" to "©^", "I" to "ª^",
-        "J" to "«^", "K" to "¬^", "L" to "®^", "M" to "¯^", "N" to "°^", "Ñ" to "±^", "O" to "²^", "P" to "³^", "Q" to "µ^",
-        "R" to "¶^", "S" to "·^", "T" to "¹^", "U" to "º^", "V" to "»^", "W" to "¼^", "X" to "½^", "Y" to "¾^", "Z" to "ø^",
-        "Á" to "¢´", "É" to "¦´", "Í" to "ª´", "Ó" to "²´", "Ú" to "º´", "á" to "¢´", "é" to "¦´", "í" to "ª´", "ó" to "²´",
-        "ú" to "º´", "Ü" to "º¨", "ü" to "º¨", " " to "&"
+        "a" to "¢",
+        "b" to "£",
+        "c" to "¤",
+        "d" to "¥",
+        "e" to "¦",
+        "f" to "§",
+        "g" to "►",
+        "h" to "©",
+        "i" to "ª",
+        "j" to "«",
+        "k" to "¬",
+        "l" to "®",
+        "m" to "¯",
+        "n" to "°",
+        "ñ" to "±",
+        "o" to "²",
+        "p" to "³",
+        "q" to "µ",
+        "r" to "¶",
+        "s" to "·",
+        "t" to "¹",
+        "u" to "º",
+        "v" to "»",
+        "w" to "¼",
+        "x" to "½",
+        "y" to "¾",
+        "z" to "ø",
+        "A" to "¢^",
+        "B" to "£^",
+        "C" to "¤^",
+        "D" to "¥^",
+        "E" to "¦^",
+        "F" to "§^",
+        "G" to "►^",
+        "H" to "©^",
+        "I" to "ª^",
+        "J" to "«^",
+        "K" to "¬^",
+        "L" to "®^",
+        "M" to "¯^",
+        "N" to "°^",
+        "Ñ" to "±^",
+        "O" to "²^",
+        "P" to "³^",
+        "Q" to "µ^",
+        "R" to "¶^",
+        "S" to "·^",
+        "T" to "¹^",
+        "U" to "º^",
+        "V" to "»^",
+        "W" to "¼^",
+        "X" to "½^",
+        "Y" to "¾^",
+        "Z" to "ø^",
+        "Á" to "¢´",
+        "É" to "¦´",
+        "Í" to "ª´",
+        "Ó" to "²´",
+        "Ú" to "º´",
+        "á" to "¢´",
+        "é" to "¦´",
+        "í" to "ª´",
+        "ó" to "²´",
+        "ú" to "º´",
+        "Ü" to "º¨",
+        "ü" to "º¨",
+        " " to "&"
     )
 
     private val reverseCharMap = charMap.entries.associate { (k, v) -> v to k }
 
+    private fun applySavedDarkMode() {
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val isDarkMode = prefs.getBoolean("dark_mode", false)
+
+        // Cambiar el modo de noche
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
+        // Ajustar barra de estado (colores e iconos)
+        window.statusBarColor = ContextCompat.getColor(
+            this,
+            if (isDarkMode) R.color.status_bar_dark else R.color.status_bar
+        )
+
+        val decorView = window.decorView
+        val flags = decorView.systemUiVisibility
+        decorView.systemUiVisibility = if (isDarkMode) {
+            // Iconos claros
+            flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        } else {
+            // Iconos oscuros
+            flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        applySavedDarkMode()
         setContentView(R.layout.activity_main)
+
+
+        val settingsButton = findViewById<Button>(R.id.button_settings)
+        settingsButton.setOnClickListener {
+            // Inflamos la vista del diálogo
+            val dialogView = layoutInflater.inflate(R.layout.dialog_settings, null)
+            val switchDarkMode = dialogView.findViewById<Switch>(R.id.switch_dark_mode)
+
+            // Cargamos la preferencia guardada
+            val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+            val isDarkMode = prefs.getBoolean("dark_mode", false)
+            switchDarkMode.isChecked = isDarkMode
+
+            // Construimos el AlertDialog
+            val dialog = AlertDialog.Builder(this)
+               // .setTitle("Configuración")
+                .setView(dialogView)
+                .setPositiveButton("Cerrar", null) // Botón para cerrar
+                .create()
+
+            // Mostramos el diálogo
+            dialog.show()
+
+            switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+                // Guardar la preferencia
+                prefs.edit().putBoolean("dark_mode", isChecked).apply()
+                // Aplicar el modo
+                Handler(Looper.getMainLooper()).postDelayed({
+                    AppCompatDelegate.setDefaultNightMode(
+                        if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
+                        else AppCompatDelegate.MODE_NIGHT_NO
+                    )
+                    recreate()
+                }, 100) // retrasa para evitar cerrar el diálogo abruptamente
+            }
+
+
+        }
+
+
+        val drawer = findViewById<LinearLayout>(R.id.end_drawer)
+
+        ViewCompat.setOnApplyWindowInsetsListener(drawer) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            // Padding fijo de 16dp
+            val basePadding = (16 * view.resources.displayMetrics.density).toInt()
+
+            view.setPadding(
+                basePadding + systemBars.left,
+                basePadding + systemBars.top,
+                basePadding + systemBars.right,
+                basePadding + systemBars.bottom
+            )
+
+            insets
+        }
+
+
+
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        val menuButton = findViewById<ImageButton>(R.id.button_menu)
+
+        menuButton.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.END)
+        }
 
         // Inicializar vistas
         inputText = findViewById(R.id.input_text)
@@ -156,7 +323,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Crear archivo temporal
-        val fileName = "output.txt" // En una versión futura, usaré un diálogo para personalizar el nombre
+        val fileName =
+            "output.txt" // En una versión futura, usaré un diálogo para personalizar el nombre
         val file = File(cacheDir, fileName)
         FileOutputStream(file).use { it.write(text.toByteArray()) }
 
@@ -182,3 +350,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+

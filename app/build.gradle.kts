@@ -11,8 +11,8 @@ android {
         applicationId = "com.zadel.randomgenerator"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.1"
+        versionCode = 120
+        versionName = "1.2_nightmode"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
