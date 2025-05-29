@@ -6,6 +6,7 @@
     <color name="text_gray">#A0A0A0</color>
     <color name="shadow_gray">#2E3A39</color>
     <color name="white">#FFFFFF</color>
+    <color name="red">#CC0000</color>
     <color name="status_bar">#005D4A</color>
     <color name="status_bar_dark">#121212</color>
 </resources>

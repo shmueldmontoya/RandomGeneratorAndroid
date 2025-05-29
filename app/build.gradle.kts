@@ -11,8 +11,8 @@ android {
         applicationId = "com.zadel.randomgenerator"
         minSdk = 26
         targetSdk = 35
-        versionCode = 120
-        versionName = "1.2_nightmode"
+        versionCode = 131
+        versionName = "1.3.1_memory"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,6 +42,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

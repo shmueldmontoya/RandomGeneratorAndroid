@@ -92,7 +92,7 @@
         <EditText
             android:id="@+id/input_text"
             android:layout_width="0dp"
-            android:layout_height="90dp"
+            android:layout_height="120dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
@@ -142,10 +142,27 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintWidth_percent="0.45" />
 
+        <Button
+            android:id="@+id/button_save_memory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/button_background"
+            android:drawableEnd="@drawable/ic_sdcard"
+            android:text="Guardar en memoria"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            app:layout_constraintTop_toBottomOf="@id/button_copy"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <EditText
             android:id="@+id/output_text"
             android:layout_width="0dp"
-            android:layout_height="90dp"
+            android:layout_height="120dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
@@ -155,7 +172,7 @@
             android:textSize="20sp"
             android:fontFamily="@font/quicksand"
             android:textColor="@color/text_gray"
-            app:layout_constraintTop_toBottomOf="@id/button_clear"
+            app:layout_constraintTop_toBottomOf="@id/button_save_memory"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -224,7 +241,7 @@
             android:text="Ajustes" />
 
         <Button
-            android:id="@+id/button_history"
+            android:id="@+id/button_memory"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:drawableEnd="@drawable/ic_sdcard"
