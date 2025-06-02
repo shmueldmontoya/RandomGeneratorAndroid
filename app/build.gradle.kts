@@ -11,8 +11,8 @@ android {
         applicationId = "com.zadel.randomgenerator"
         minSdk = 26
         targetSdk = 35
-        versionCode = 131
-        versionName = "1.3.1_memory"
+        versionCode = 140
+        versionName = "1.4_json_exports"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

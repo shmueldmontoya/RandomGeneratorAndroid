@@ -31,6 +31,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonDownload: Button
     private lateinit var buttonFileInput: Button
 
+    private val importFileLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { loadJsonFromUri(it) }
+    }
+
+
     // Mapeo de caracteres para codificación personalizada
     private val charMap = mapOf(
         "a" to "¢", "b" to "£", "c" to "¤", "d" to "¥", "e" to "¦",
@@ -272,14 +277,22 @@ class MainActivity : AppCompatActivity() {
     private fun showSettingsDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_settings, null)
         val switchDarkMode = dialogView.findViewById<Switch>(R.id.switch_dark_mode)
+        val buttonClearAll = dialogView.findViewById<Button>(R.id.button_clear_all)
+        val buttonExport = dialogView.findViewById<Button>(R.id.button_export)
+        val buttonImport = dialogView.findViewById<Button>(R.id.button_import)
+
         val prefs = getSharedPreferences("settings", MODE_PRIVATE)
         val isDarkMode = prefs.getBoolean("dark_mode", false)
         switchDarkMode.isChecked = isDarkMode
+
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setPositiveButton("Cerrar", null)
             .create()
+
         dialog.show()
+
+        // Listener para el switch de modo oscuro
         switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean("dark_mode", isChecked).apply()
             android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
@@ -290,5 +303,152 @@ class MainActivity : AppCompatActivity() {
                 recreate()
             }, 100)
         }
+
+        // Listener para borrar todo el historial
+        buttonClearAll.setOnClickListener {
+            // Aquí defines qué pasa cuando se presiona borrar todo
+            val confirmDialog = AlertDialog.Builder(this)
+                .setTitle("Confirmar")
+                .setMessage("¿Seguro quieres borrar todo el historial?")
+                .setPositiveButton("Sí") { _, _ ->
+                    clearMemoryHistory()
+                    Toast.makeText(this, "Historial borrado", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss() // Cierra el diálogo si quieres
+                }
+                .setNegativeButton("No", null)
+                .show()
+        }
+
+        // Listener para exportar historial
+        buttonExport.setOnClickListener {
+            exportMemoryHistory()
+        }
+
+        // Listener para importar historial
+        buttonImport.setOnClickListener {
+            importMemoryHistory()
+        }
     }
+
+    // Funciones para el historial que debes implementar en MainActivity
+    private fun clearMemoryHistory() {
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        prefs.edit().remove("memory_history").apply()
+    }
+
+    private fun exportMemoryHistory() {
+        // Aquí podrías crear un archivo o compartir el historial JSON como ejemplo
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val historyJson = prefs.getString("memory_history", "[]") ?: "[]"
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, historyJson)
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(intent, "Exportar historial"))
+    }
+
+    private fun importMemoryHistory() {
+        val options = arrayOf("Pegar JSON", "Seleccionar archivo JSON")
+        AlertDialog.Builder(this)
+            .setTitle("Importar historial")
+            .setItems(options) { dialog, which ->
+                when (which) {
+                    0 -> showPasteJsonDialog()
+                    1 -> importFileLauncher.launch("application/json")
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun showPasteJsonDialog() {
+        val editText = EditText(this)
+        editText.hint = "Pega aquí el JSON"
+        editText.minLines = 5
+        editText.maxLines = 10
+        editText.isSingleLine = false
+        editText.setTextColor(resources.getColor(android.R.color.black, null))
+
+        AlertDialog.Builder(this)
+            .setTitle("Pegar JSON")
+            .setView(editText)
+            .setPositiveButton("Importar") { _, _ ->
+                val json = editText.text.toString()
+                if (json.isBlank()) {
+                    Toast.makeText(this, "El texto está vacío", Toast.LENGTH_SHORT).show()
+                } else {
+                    importFromJson(json)
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun loadJsonFromUri(uri: android.net.Uri) {
+        try {
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                val json = inputStream.bufferedReader().readText()
+                importFromJson(json)
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error al leer el archivo JSON", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun importFromJson(json: String) {
+        val gson = Gson()
+        val type = object : com.google.gson.reflect.TypeToken<List<MemoryEntry>>() {}.type
+        val importedHistory: List<MemoryEntry> = try {
+            gson.fromJson(json, type)
+        } catch (e: Exception) {
+            Toast.makeText(this, "JSON inválido", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (importedHistory.isNullOrEmpty()) {
+            Toast.makeText(this, "El JSON no contiene elementos válidos", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Mostrar opciones: sobrescribir o combinar
+        AlertDialog.Builder(this)
+            .setTitle("Importar historial")
+            .setMessage("¿Qué deseas hacer con el historial actual?")
+            .setPositiveButton("Sobrescribir") { _, _ ->
+                sobrescribirHistorial(importedHistory)
+            }
+            .setNegativeButton("Combinar") { _, _ ->
+                combinarHistorial(importedHistory)
+            }
+            .setNeutralButton("Cancelar", null)
+            .show()
+    }
+
+    private fun sobrescribirHistorial(nuevoHistorial: List<MemoryEntry>) {
+        val gson = Gson()
+        val ordenado = nuevoHistorial.sortedByDescending { it.timestamp }
+        getSharedPreferences("settings", MODE_PRIVATE)
+            .edit()
+            .putString("memory_history", gson.toJson(ordenado))
+            .apply()
+        Toast.makeText(this, "Historial sobrescrito con ${ordenado.size} elementos", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun combinarHistorial(importedHistory: List<MemoryEntry>) {
+        val gson = Gson()
+        val type = object : com.google.gson.reflect.TypeToken<List<MemoryEntry>>() {}.type
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val existingJson = prefs.getString("memory_history", "[]")
+        val existingHistory: MutableList<MemoryEntry> = gson.fromJson(existingJson, type)
+
+        val mergedHistory = (existingHistory + importedHistory)
+            .distinctBy { it.text + it.timestamp }
+            .sortedByDescending { it.timestamp }
+
+        prefs.edit().putString("memory_history", gson.toJson(mergedHistory)).apply()
+
+        Toast.makeText(this, "Historial combinado: ${mergedHistory.size} elementos totales", Toast.LENGTH_SHORT).show()
+    }
+
 }
